@@ -124,11 +124,42 @@ transit_cost %>%
   filter(tunnel_per == 1,
          end_year <= 2020,
          country == "China") %>% 
-  mutate(year = (year %/% 5) * 5) %>% 
+  mutate(year = (year %/% 5) * 5,
+         city = fct_lump(city, 5)) %>% 
   ggplot(aes(year, cost_km_millions, group = year)) +
-  geom_boxplot()
+  geom_boxplot(outlier.size = -1) +
+  geom_jitter(aes(color = city), height= 0, width = 1) +
+  expand_limits(y = 0) +
+  labs(y = "Cost / km (Real USD, Millions",
+       x = "Year",
+       title = "Cost distribution / km in China")
+
+transit_cost %>% 
+  filter(tunnel_per == 1,
+         end_year <= 2020,
+         country == "China") %>% 
+  mutate(city = fct_lump(city, 4)) %>% 
+  ggplot(aes(stations / length, cost_km_millions, size = length,
+             color = city)) +
+  geom_point() +
+  expand_limits(x = 0, y = 0) +
+  labs( x = "Stations / km", "Cost / kilometer",
+        y = "Cost / km")
+
 ```
 
+Conclusions: Prices in China ranged from slightly above 200M/KM to a bit under 200M/KM from 2000 to 2015, and have since risen a bit.
+
+cost_km_millions comes from real_cost / length (NOT completed length)
+
+No strong relationship between stations / km and cost / km
+
+
+```{r}
+transit_cost %>% 
+  ggplot(aes(cost_km_millions, real_cost / length)) + 
+  geom_point()
+```
 
 # Readme
 
